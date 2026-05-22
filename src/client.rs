@@ -537,7 +537,7 @@ impl Client {
                             start.elapsed(),
                             rr.relay_server
                         );
-                        let relay_server = Self::get_relay_server(rr.relay_server);
+                        let relay_server = Self::get_relay_server(rr.relay_server.clone());
                         start = Instant::now();
                         let mut connect_futures = Vec::new();
                         if let Some(s) = ipv6.0 {
