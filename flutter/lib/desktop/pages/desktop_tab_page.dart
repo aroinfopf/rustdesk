@@ -51,8 +51,8 @@ class _DesktopTabPageState extends State<DesktopTabPage> {
       await bind.mainSetOption(key: 'custom-rendezvous-server', value: host);
     }
     final currentRelay = await bind.mainGetOption(key: 'relay-server');
-    if (currentRelay.isNotEmpty) {
-      await bind.mainSetOption(key: 'relay-server', value: '');
+    if (currentRelay != host) {
+      await bind.mainSetOption(key: 'relay-server', value: host);
     }
     final currentApi = await bind.mainGetOption(key: 'api-server');
     if (currentApi != apiServer) {

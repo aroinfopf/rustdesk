@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
@@ -3780,7 +3779,7 @@ Widget loadLogo({bool? forceDark, bool compact = false}) {
                     fontWeight: FontWeight.w800,
                     color: MyTheme.accent,
                     height: 1.0,
-                    letterSpacing: -0.6,
+                    letterSpacing: 0,
                   ),
                 ),
                 TextSpan(

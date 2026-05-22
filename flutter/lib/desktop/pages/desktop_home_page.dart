@@ -188,7 +188,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           }
           final textColor = Theme.of(context).textTheme.titleLarge?.color;
           return Container(
-            width: isIncomingOnly ? 320.0 : 300.0,
+            width: isIncomingOnly ? 320.0 : 388.0,
             color: const Color(0xFF1E293B),
             child: Stack(
               children: [
@@ -326,9 +326,18 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(24, 20, 24, 18),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final minHeight = constraints.maxHeight > 38
+                              ? constraints.maxHeight - 38
+                              : 0.0;
+                          return SingleChildScrollView(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(minHeight: minHeight),
+                              child: IntrinsicHeight(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
                           Align(
                             alignment: Alignment.center,
                             child: Opacity(
@@ -474,7 +483,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                               ],
                             );
                           }),
-                        ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -1188,8 +1202,10 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
           const host = 'bdesk.arotecnologia.inf.br';
-          final hbbs = host.contains(':') ? host : '$host:21116';
-          final hbbr = host.contains(':') ? host : '$host:21117';
+          const hbbs = host;
+          const hbbr = host;
+          const hbbsProbe = '$host:21116';
+          const hbbrProbe = '$host:21117';
           await bind.mainSetOption(key: 'custom-rendezvous-server', value: hbbs);
           await bind.mainSetOption(key: 'relay-server', value: hbbr);
           await bind.mainSetOption(key: 'key', value: 'YLVVcTEGLP3xzu1jmrSuFxJZl9Ui0nUINzua+0U8gYA=');
@@ -1200,9 +1216,9 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           await start_service(true);
           await gFFI.serverModel.startService();
           final idErr = await bind.mainTestIfValidServer(
-              server: hbbs, testWithProxy: false);
+              server: hbbsProbe, testWithProxy: false);
           final relayErr = await bind.mainTestIfValidServer(
-              server: hbbr, testWithProxy: false);
+              server: hbbrProbe, testWithProxy: false);
           final probeMsgs = <String>[];
           if (idErr.trim().isNotEmpty) {
             probeMsgs.add('ID: ${translate(idErr)}');

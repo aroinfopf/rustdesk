@@ -507,7 +507,7 @@ impl Client {
                             peer_nat_type = ph.nat_type();
                             is_local = ph.is_local();
                             signed_id_pk = ph.pk.into();
-                            relay_server = ph.relay_server;
+                            relay_server = Self::get_relay_server(ph.relay_server);
                             peer_addr = AddrMangle::decode(&ph.socket_addr);
                             feedback = ph.feedback;
                             let s = udp.0.take();
@@ -537,6 +537,7 @@ impl Client {
                             start.elapsed(),
                             rr.relay_server
                         );
+                        let relay_server = Self::get_relay_server(rr.relay_server);
                         start = Instant::now();
                         let mut connect_futures = Vec::new();
                         if let Some(s) = ipv6.0 {
@@ -552,7 +553,7 @@ impl Client {
                         let fut = Self::create_relay(
                             &peer,
                             rr.uuid,
-                            rr.relay_server,
+                            relay_server,
                             &key,
                             conn_type,
                             my_addr.is_ipv4(),
@@ -833,6 +834,17 @@ impl Client {
         Ok(option_pk)
     }
 
+    /// Prefer the configured relay server over the value returned by hbbs.
+    /// This keeps Docker/private relay addresses from leaking to clients.
+    fn get_relay_server(provided_by_rendezvous_server: String) -> String {
+        let relay_server = Config::get_option("relay-server");
+        if relay_server.is_empty() {
+            provided_by_rendezvous_server
+        } else {
+            relay_server
+        }
+    }
+
     /// Request a relay connection to the server.
     async fn request_relay(
         peer: &str,
@@ -843,6 +855,7 @@ impl Client {
         token: &str,
         conn_type: ConnType,
     ) -> ResultType<Stream> {
+        let relay_server = Self::get_relay_server(relay_server);
         let mut succeed = false;
         let mut uuid = "".to_owned();
         let mut ipv4 = true;
